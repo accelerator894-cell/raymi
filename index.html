@@ -2,578 +2,140 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Milet's Space | 登陆</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的个人主页</title>
     <style>
-        :root {
-            /* 纯黑背景 */
-            --bg-color: #000000;
-            /* 卡片背景 */
-            --card-bg: rgba(16, 20, 30, 0.8); /* 稍微透明一点，让背景透出来 */
-            /* 强对比边框 */
-            --border-color: rgba(255, 255, 255, 0.3);
-            --text-main: #ffffff;
-            --text-muted: #b0b0b0;
-            --accent: #ffffff;
+        /* 全局重置与基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            height: 100vh;
-            overflow: hidden;
-            touch-action: manipulation; 
-            user-select: none;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fcfcfc; /* 柔和的灰白色背景 */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
-        /* =========================================
-           [核心修改] 1. 动态 NASA 背景图
-           原理：让一张比屏幕大的图片缓慢移动和缩放
-        ========================================= */
-        #nasa-bg {
-            position: fixed; 
-            /* 让背景比屏幕大，这样才有移动空间 */
-            top: -10%; left: -10%; width: 120%; height: 120%;
-            z-index: -3;
-            /* 换一张色彩更丰富、更清晰的 NASA 图片 (船底座星云) */
-            background-image: url('https://images-assets.nasa.gov/image/PIA13653/PIA13653~orig.jpg');
-            background-size: cover; 
-            background-position: center;
-            /* 稍微调亮一点亮度，让细节更清楚，同时降低一点对比度以柔和化 */
-            filter: brightness(0.6) contrast(1.1) saturate(1.2);
-            opacity: 0; 
-            transition: opacity 3s ease-in-out;
-            /* [核心] 添加缓慢移动和缩放动画：120秒完成一次往返 */
-            animation: space-drift 120s linear infinite alternate;
+        /* 布局容器 */
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;
         }
 
-        /* 定义背景漂移动画的关键帧 */
-        @keyframes space-drift {
-            0% {
-                /* 初始状态：原始大小，居中 */
-                transform: scale(1) translate(0, 0);
-            }
-            100% {
-                /* 结束状态：缓慢放大 15%，并向左上方缓慢平移 */
-                transform: scale(1.15) translate(-5%, -3%);
-            }
+        /* 顶部导航 */
+        header {
+            padding: 40px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        /* 2. 动态星云画布 (保留，叠加在背景上增加层次感) */
-        #nebulae-canvas {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: -2; opacity: 0; transition: opacity 2s ease-in-out;
-            /* 稍微降低一点画布透明度，让背景图更明显 */
-            mix-blend-mode: screen; 
-        }
-
-        /* 3. 星星/流星 (最上层特效) */
-        #starfield {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            pointer-events: none; z-index: -1; opacity: 0; transition: opacity 2s ease-in-out;
-        }
-
-        h1, h2, h3, .font-mono { font-family: 'Space Mono', monospace; }
-        
-        a { color: var(--text-main); text-decoration: none; transition: all 0.3s; display: inline-flex; align-items: center; gap: 6px; }
-        a:hover { opacity: 0.8; text-shadow: 0 0 10px rgba(255,255,255,0.8); }
-
-        .icon { width: 1.2em; height: 1.2em; fill: currentColor; vertical-align: text-bottom; position: relative; top: -1px; }
-        .icon-sm { width: 1em; height: 1em; }
-
-        /* 按钮样式：高对比度 */
-        .btn {
-            background: #ffffff; color: #000000; border: 2px solid #ffffff; 
-            padding: 12px 24px; font-family: 'Space Mono', monospace; font-weight: 800; 
-            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, background 0.2s; 
-            display: inline-block; border-radius: 4px; position: relative; z-index: 20;
-            text-transform: uppercase; letter-spacing: 1px;
-        }
-        .btn:hover { 
-            background: transparent; color: #ffffff;
-            transform: translateY(-2px); box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
-        }
-
-        /* --- 登录界面 --- */
-        #login-section {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; justify-content: center; align-items: center;
-            z-index: 10; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px);
-            transition: opacity 0.8s ease, visibility 0.8s;
-        }
-        .login-box { 
-            width: 100%; max-width: 400px; padding: 45px; text-align: center; position: relative; z-index: 20;
-            background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255,255,255,0.1) inset;
-        }
-        .login-title { 
-            font-size: 1.8rem; margin-bottom: 10px; letter-spacing: 4px; text-transform: uppercase; 
-            color: #ffffff; font-weight: 800; text-shadow: 0 2px 10px rgba(0,0,0,0.8);
-        }
-        .login-subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 40px; font-weight: 400; }
-        
-        .input-group { margin-bottom: 25px; text-align: left; }
-        .input-group label { 
-            display: flex; align-items: center; gap: 8px; font-size: 0.75rem; 
-            color: #ffffff; margin-bottom: 10px; font-family: 'Space Mono', monospace; 
-            font-weight: 700; letter-spacing: 1px;
-        }
-        .input-field { 
-            width: 100%; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.3); 
-            color: #ffffff; padding: 14px; font-family: 'Space Mono', monospace; 
-            outline: none; transition: all 0.3s; border-radius: 4px; font-size: 1rem;
-        }
-        .input-field:focus { 
-            border-color: #ffffff; background: rgba(0, 0, 0, 0.8); box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-        }
-
-        /* --- 主界面 --- */
-        #main-interface {
-            opacity: 0; visibility: hidden; height: 100vh; overflow-y: auto;
-            transition: opacity 1s ease; padding-bottom: 100px; position: relative; z-index: 1;
-        }
-
-        .hitokoto-container {
-            text-align: center; padding: 25px 0 15px 0;
-            border-bottom: 1px solid var(--border-color);
-            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(15px);
-            position: sticky; top: 0; z-index: 50;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.8);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        .hitokoto-wrapper { display: flex; align-items: center; gap: 10px; max-width: 90%; }
-        .hitokoto-text {
-            font-family: 'Inter', serif; font-size: 1rem; color: #ffffff; margin: 0;
-            line-height: 1.5; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.8); 
-        }
-        .hitokoto-author { 
-            font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--text-muted); 
-            display: block; margin-top: 5px; 
-        }
-        .refresh-btn {
-            background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 5px;
-            display: flex; align-items: center; transition: color 0.3s;
-        }
-        .refresh-btn:hover { color: #ffffff; }
-        .rotate-anim { animation: spin 1s linear infinite; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        header { 
-            padding: 30px 5%; display: flex; justify-content: space-between; align-items: center; 
-            position: relative; z-index: 2; 
-        }
-        .logo { font-size: 1.4rem; font-weight: 800; letter-spacing: -1px; display: flex; align-items: center; gap: 10px; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-        .nav-links { display: flex; gap: 25px; }
-
-        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; position: relative; z-index: 2; }
-        
-        .hero-text { 
-            font-size: 3rem; line-height: 1.1; margin-bottom: 70px; font-weight: 800;
-            color: #ffffff; background: none; -webkit-text-fill-color: initial;
-            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
-        }
-        
-        .post-list { list-style: none; margin-bottom: 60px; }
-        .post-item { 
-            padding: 35px; border: 1px solid var(--border-color); 
-            background: var(--card-bg); backdrop-filter: blur(10px);
-            border-radius: 12px; margin-bottom: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-            transition: transform 0.3s, border-color 0.3s;
-        }
-        .post-item:hover { border-color: #ffffff; transform: translateY(-5px); }
-        
-        .post-meta { 
-            font-size: 0.85rem; color: #a0a0a0; margin-bottom: 15px; 
-            display: flex; align-items: center; gap: 8px; font-family: 'Space Mono', monospace; font-weight: 600;
-        }
-        .post-title { font-size: 1.6rem; margin-bottom: 15px; font-weight: 700; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        .post-excerpt { color: #d0d0d0; font-size: 1rem; line-height: 1.7; }
-
-        .section-header {
-            display: flex; align-items: center; gap: 10px;
-            margin-bottom: 25px; color: #a0a0a0; font-family: 'Space Mono', monospace;
-            font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;
-            border-bottom: 1px solid var(--border-color); padding-bottom: 15px;
+        .logo {
             font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: -0.5px;
         }
 
-        .upload-section { margin-top: 80px; }
-        .upload-card {
-            background: var(--card-bg); border: 1px solid var(--border-color);
-            border-radius: 12px; padding: 40px; text-align: center;
-            transition: all 0.3s; backdrop-filter: blur(10px);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-        }
-        .upload-card:hover { border-color: #ffffff; box-shadow: 0 10px 50px rgba(255, 255, 255, 0.2); }
-
-        .upload-big-btn {
-            display: inline-flex; align-items: center; gap: 10px;
-            background: #ffffff; color: #000000; border: 2px solid #ffffff;
-            padding: 14px 35px; border-radius: 50px;
-            font-family: 'Space Mono', monospace; font-size: 1rem;
-            text-transform: uppercase; letter-spacing: 1px; font-weight: 800;
-            transition: all 0.3s;
-        }
-        .upload-big-btn:hover {
-            background: transparent; color: #ffffff;
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.5); transform: scale(1.05);
+        nav a {
+            text-decoration: none;
+            color: #666;
+            margin-left: 20px;
+            font-size: 0.9rem;
+            transition: color 0.3s;
         }
 
-        .fade-in-up { animation: fadeInUp 0.8s ease forwards; opacity: 0; transform: translateY(20px); }
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-        
-        .hidden { opacity: 0 !important; visibility: hidden !important; pointer-events: none; }
-        .visible { opacity: 1 !important; visibility: visible !important; }
-
-        .loading {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000000; display: flex; justify-content: center; align-items: center;
-            z-index: 9999; transition: opacity 0.5s ease;
+        nav a:hover {
+            color: #000;
         }
-        .loading-text {
-            font-family: 'Space Mono', monospace; font-size: 1.2rem; color: #ffffff; letter-spacing: 4px; font-weight: 700;
-        }
-        .loading-dots:after { content: ' .'; animation: dots 1.5s steps(5, end) infinite; }
-        @keyframes dots { 0%, 20% { content: ' .'; } 40% { content: ' ..'; } 60%, 100% { content: ' ...'; } }
 
+        /* 主要内容区 */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px 0;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            margin-bottom: 20px;
+            color: #111;
+        }
+
+        p.intro {
+            font-size: 1.25rem;
+            color: #666;
+            max-width: 500px;
+            margin-bottom: 40px;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            display: inline-block;
+            background-color: #000;
+            color: #fff;
+            padding: 12px 28px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #333;
+            transform: translateY(-2px);
+        }
+
+        /* 底部 */
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid #eee;
+            color: #999;
+            font-size: 0.85rem;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-    <div id="loading-screen" class="loading">
-        <div class="loading-text">
-            SYSTEM INITIALIZING<span class="loading-dots"></span>
-        </div>
-    </div>
 
-    <div id="nasa-bg"></div>
-    
-    <canvas id="nebulae-canvas"></canvas>
-    
-    <canvas id="starfield"></canvas>
-
-    <section id="login-section">
-        <div class="login-box">
-            <h1 class="login-title">SPACE ACCESS</h1>
-            <p class="login-subtitle">请输入访问密钥进入宇宙空间站</p>
-            <form id="login-form">
-                <div class="input-group">
-                    <label>
-                        <svg class="icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                        ASTRONAUT ID
-                    </label>
-                    <input type="text" class="input-field" placeholder="Cosmonaut" value="Milet">
-                </div>
-                <div class="input-group">
-                    <label>
-                        <svg class="icon" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-                        SPACE PASSCODE
-                    </label>
-                    <input type="password" class="input-field" placeholder="••••••" value="123456">
-                </div>
-                <button type="submit" class="btn" style="width: 100%; margin-top: 15px; position: relative; z-index: 30;">
-                    ENTER ORBIT
-                </button>
-            </form>
-            <p style="margin-top: 25px; font-size: 0.7rem; color: var(--text-muted); opacity: 0.7;">
-                背景: NASA/JPL-Caltech - Carina Nebula
-            </p>
-        </div>
-    </section>
-
-    <div id="main-interface">
-        
-        <div class="hitokoto-container">
-            <div class="hitokoto-wrapper">
-                <p id="hitokoto_text" class="hitokoto-text">“ 正在接收宇宙信号... ”</p>
-                <button id="refresh_hitokoto" class="refresh-btn" title="获取新信号">
-                    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-                </button>
-            </div>
-            <span id="hitokoto_author" class="hitokoto-author"></span>
-        </div>
-
+    <div class="container">
         <header>
-            <div class="logo font-mono">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M12 2L2 12h3v8h6v-6h2v6h6v-8h3L12 2z"/></svg>
-                MILET.SPACE
-            </div>
-            <nav class="nav-links">
-                <a href="mqqwpa://im/chat?chat_type=wpa&uin=2164791647&version=1&src_type=web" class="font-mono" style="font-size: 0.8rem;">
-                   <svg class="icon" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
-                   Mission Control
-                </a>
-                <a href="#" class="font-mono" style="font-size: 0.8rem;">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z"/></svg>
-                    Return to Earth
-                </a>
+            <div class="logo">MySite.</div>
+            <nav>
+                <a href="#">关于</a>
+                <a href="#">作品</a>
+                <a href="#">联系</a>
             </nav>
         </header>
 
-        <div class="container">
-            <div class="hero-text fade-in-up" style="animation-delay: 0.2s;">
-                Beyond the noise,<br>
-                Into the cosmos.
+        <main>
+            <h1>你好，世界。</h1>
+            <p class="intro">
+                这是一个托管在 Cloudflare Pages 上的极简网站。<br>
+                简单，高效，快速。
+            </p>
+            <div>
+                <a href="#" class="btn">开始探索</a>
             </div>
-
-            <ul class="post-list">
-                <li class="post-item fade-in-up" style="animation-delay: 0.4s;">
-                    <span class="post-meta">
-                        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
-                        2023.12.24 / COSMIC THOUGHTS
-                    </span>
-                    <h2 class="post-title"><a href="#">关于数字极简主义的思考</a></h2>
-                    <p class="post-excerpt">在这个充斥着通知红点和无限信息流的时代，保持专注成了一种稀缺的能力。我们需要重新审视工具与人的关系，就像宇航员审视宇宙的浩瀚与自身的渺小...</p>
-                </li>
-                <li class="post-item fade-in-up" style="animation-delay: 0.5s;">
-                    <span class="post-meta">
-                        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM5.23 7.75C6.1 8.62 6.7 9.74 6.91 11H4.07c.15-1.43.71-2.75 1.56-3.85zM4.07 13h2.84c-.21 1.26-.81 2.38-1.68 3.25-.85-1.1-1.41-2.42-1.56-3.85zM12 20c-2.52 0-4.8-1.06-6.4-2.78.83-1.13 1.39-2.45 1.65-3.87h9.5c.26 1.42.82 2.74 1.65 3.87C16.8 18.94 14.52 20 12 20zm2.97-8h-5.94c-.2-1.26.16-2.58.96-3.66.79-1.08 1.94-1.78 3.21-1.78c.8 1.08 1.16 2.4.96 3.66zm5.73-2h-2.84c.21-1.26.81-2.38 1.68-3.25.85 1.1 1.41 2.42 1.56 3.85zM18.77 16.25c-.87-.87-1.47-1.99-1.68-3.25h2.84c-.15 1.43-.71 2.75-1.56 3.85z"/></svg>
-                        2023.11.15 / SPACE EXPLORATION
-                    </span>
-                    <h2 class="post-title"><a href="#">仰望星空：宇宙中的创生之柱</a></h2>
-                    <p class="post-excerpt">创生之柱是哈勃太空望远镜拍摄的最著名的图像之一，展示了鹰星云中气体和尘埃的柱状结构。这些柱子实际上是由冷分子氢和尘埃组成的恒星孵化场...</p>
-                </li>
-            </ul>
-
-            <section class="upload-section fade-in-up" style="animation-delay: 0.6s;">
-                <div class="section-header">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <svg class="icon" viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
-                        IMAGES
-                    </div>
-                </div>
-
-                <div class="upload-card">
-                    <a href="https://tally.so/r/aQekk2" target="_blank" class="upload-big-btn">
-                        <svg class="icon" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-                        UPLOAD TO BLOG
-                    </a>
-                    <p style="margin-top: 20px; font-size: 0.8rem; color: var(--text-muted);">
-                        上传图片并发布到您的个人博客。
-                    </p>
-                </div>
-            </section>
-
-        </div>
+        </main>
     </div>
 
-    <script>
-        // 页面加载完成后显示背景
-        window.addEventListener('load', function() {
-            setTimeout(() => {
-                document.getElementById('loading-screen').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('loading-screen').style.display = 'none';
-                    document.getElementById('nasa-bg').style.opacity = '1';
-                    document.getElementById('nebulae-canvas').style.opacity = '1';
-                    document.getElementById('starfield').style.opacity = '1';
-                }, 500);
-            }, 1000);
-            
-            fetchHitokoto();
-        });
+    <footer>
+        <div class="container">
+            &copy; 2024 Design by You. Powered by Cloudflare.
+        </div>
+    </footer>
 
-        // Hitokoto 逻辑 (带刷新)
-        const hitokotoText = document.getElementById('hitokoto_text');
-        const hitokotoAuthor = document.getElementById('hitokoto_author');
-        const refreshBtn = document.getElementById('refresh_hitokoto');
-
-        function fetchHitokoto() {
-            refreshBtn.classList.add('rotate-anim');
-            hitokotoText.style.opacity = '0.5';
-
-            fetch('https://v1.hitokoto.cn')
-                .then(response => response.json())
-                .then(data => {
-                    hitokotoText.innerText = `“ ${data.hitokoto} ”`;
-                    hitokotoAuthor.innerText = `— ${data.from_who || data.from}`;
-                })
-                .catch(err => {
-                    const backups = [
-                        { text: "我们的征途是星辰大海。", from: "银河英雄传说" },
-                        { text: "不要温和地走进那个良夜。", from: "狄兰·托马斯" },
-                        { text: "给岁月以文明，而不是给文明以岁月。", from: "三体" }
-                    ];
-                    const random = backups[Math.floor(Math.random() * backups.length)];
-                    hitokotoText.innerText = `“ ${random.text} ”`;
-                    hitokotoAuthor.innerText = `— ${random.from}`;
-                })
-                .finally(() => {
-                    setTimeout(() => {
-                        refreshBtn.classList.remove('rotate-anim');
-                        hitokotoText.style.opacity = '1';
-                    }, 500);
-                });
-        }
-        refreshBtn.addEventListener('click', fetchHitokoto);
-
-        /* =========================================
-           1. 动态星云效果 (极慢呼吸)
-        ========================================= */
-        const nebulaeCanvas = document.getElementById('nebulae-canvas');
-        const nebulaeCtx = nebulaeCanvas.getContext('2d');
-        let nebulaeWidth, nebulaeHeight, nebulaeTime = 0;
-
-        function initNebulaeCanvas() {
-            nebulaeWidth = window.innerWidth; nebulaeHeight = window.innerHeight;
-            nebulaeCanvas.width = nebulaeWidth; nebulaeCanvas.height = nebulaeHeight;
-        }
-        window.addEventListener('resize', initNebulaeCanvas);
-
-        function drawNebulae() {
-            nebulaeCtx.clearRect(0, 0, nebulaeWidth, nebulaeHeight);
-            
-            const gradient1 = nebulaeCtx.createRadialGradient(
-                nebulaeWidth * 0.3, nebulaeHeight * 0.7, 0,
-                nebulaeWidth * 0.3, nebulaeHeight * 0.7, nebulaeWidth * 0.8
-            );
-            gradient1.addColorStop(0, 'rgba(24, 119, 242, 0.3)'); 
-            gradient1.addColorStop(1, 'rgba(24, 119, 242, 0)');
-            
-            const gradient2 = nebulaeCtx.createRadialGradient(
-                nebulaeWidth * 0.7, nebulaeHeight * 0.3, 0,
-                nebulaeWidth * 0.7, nebulaeHeight * 0.3, nebulaeWidth * 0.6
-            );
-            gradient2.addColorStop(0, 'rgba(155, 81, 224, 0.25)'); 
-            gradient2.addColorStop(1, 'rgba(155, 81, 224, 0)');
-            
-            const gradient3 = nebulaeCtx.createRadialGradient(
-                nebulaeWidth * 0.5 + Math.sin(nebulaeTime * 0.001) * 100, 
-                nebulaeHeight * 0.5 + Math.cos(nebulaeTime * 0.001) * 100, 0,
-                nebulaeWidth * 0.5, nebulaeHeight * 0.5, nebulaeWidth * 0.5
-            );
-            gradient3.addColorStop(0, 'rgba(235, 87, 87, 0.2)'); 
-            gradient3.addColorStop(1, 'rgba(235, 87, 87, 0)');
-            
-            nebulaeTime += 0.1; 
-            
-            nebulaeCtx.globalAlpha = 0.8; nebulaeCtx.fillStyle = gradient1; nebulaeCtx.fillRect(0, 0, nebulaeWidth, nebulaeHeight);
-            nebulaeCtx.globalAlpha = 0.6; nebulaeCtx.fillStyle = gradient2; nebulaeCtx.fillRect(0, 0, nebulaeWidth, nebulaeHeight);
-            nebulaeCtx.globalAlpha = 0.5 + 0.2 * Math.sin(nebulaeTime * 0.002); nebulaeCtx.fillStyle = gradient3; nebulaeCtx.fillRect(0, 0, nebulaeWidth, nebulaeHeight);
-            requestAnimationFrame(drawNebulae);
-        }
-
-        /* =========================================
-           2. [核心修改] 极慢速流星雨 & 呼吸般闪烁
-        ========================================= */
-        const starCanvas = document.getElementById('starfield');
-        const starCtx = starCanvas.getContext('2d');
-        let starWidth, starHeight, stars = [];
-        const starConfig = { 
-            count: 500, 
-            speed: 0.01, 
-            baseAlpha: 0.8, 
-            // [背景星闪烁频率：呼吸感] 设为 0.002，约10秒一次明暗周期
-            twinkleSpeed: 0.002, 
-            // [极稀缺流星] 
-            shootingStarChance: 0.0001 
-        };
-
-        function initStars() { 
-            starWidth = window.innerWidth; starHeight = window.innerHeight; 
-            starCanvas.width = starWidth; starCanvas.height = starHeight; 
-            createStars(); 
-        }
-        
-        class Star {
-            constructor() { 
-                this.reset(true); 
-                this.twinkleOffset = Math.random() * Math.PI * 2;
-                this.isShootingStar = Math.random() < 0.001;
-                if(this.isShootingStar) this.shootingStarReset();
-                // [流星光效呼吸速度，保持不变]
-                this.shimmerSpeed = Math.random() * 0.005 + 0.001; 
-            }
-            reset(initial = false) {
-                this.x = Math.random() * starWidth; 
-                this.y = initial ? Math.random() * starHeight : starHeight;
-                this.size = Math.random() * 2 + 0.8; 
-                this.speed = (Math.random() * 0.2 + 0.05) * starConfig.speed;
-                this.baseOpacity = Math.random() * 0.5 + 0.4; 
-                this.opacity = this.baseOpacity;
-                this.twinkleAmplitude = Math.random() * 0.3 + 0.1;
-                this.time = Math.random() * 100;
-                this.color = Math.random() > 0.8 ? 
-                    `rgba(200, 220, 255, ${this.baseOpacity})` : 
-                    `rgba(255, 255, 255, ${this.baseOpacity})`;
-            }
-            shootingStarReset() {
-                this.x = Math.random() * starWidth;
-                this.y = Math.random() * starHeight * 0.5; 
-                this.speed = (Math.random() * 0.5 + 0.5); 
-                this.angle = Math.PI / 4 + (Math.random() - 0.5) * 0.5; 
-                this.trailLength = Math.random() * 100 + 50; 
-                this.life = 600; 
-                this.thickness = Math.random() * 1 + 0.5; 
-            }
-            update() { 
-                if(this.isShootingStar && this.life > 0) {
-                    this.life -= 1;
-                    const speedX = Math.cos(this.angle) * this.speed * 1.5; 
-                    const speedY = Math.sin(this.angle) * this.speed * 1.5;
-                    this.x += speedX; this.y += speedY;
-                    if(this.life <= 0 || this.y > starHeight + this.trailLength || this.x > starWidth + this.trailLength) { 
-                        this.isShootingStar = false; 
-                        this.reset(); 
-                    }
-                } else {
-                    // 更新普通星星位置
-                    this.time += starConfig.twinkleSpeed;
-                    this.y -= this.speed * 1; 
-                    this.opacity = this.baseOpacity + Math.sin(this.time + this.twinkleOffset) * this.twinkleAmplitude;
-                    this.opacity = Math.max(0.3, Math.min(1, this.opacity)); 
-                    
-                    if(Math.random() < starConfig.shootingStarChance && !this.isShootingStar) {
-                        this.isShootingStar = true;
-                        this.shootingStarReset();
-                    }
-                    if (this.y < 0 && !this.isShootingStar) this.reset(); 
-                }
-            }
-            draw() { 
-                if(this.isShootingStar && this.life > 0) {
-                    const tailX = this.x - Math.cos(this.angle) * this.trailLength;
-                    const tailY = this.y - Math.sin(this.angle) * this.trailLength;
-                    const shimmer = 0.6 + 0.4 * Math.sin(Date.now() * this.shimmerSpeed);
-                    const gradient = starCtx.createLinearGradient(this.x, this.y, tailX, tailY);
-                    gradient.addColorStop(0, `rgba(255, 255, 255, ${shimmer})`);
-                    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-                    starCtx.beginPath();
-                    starCtx.moveTo(this.x, this.y);
-                    starCtx.lineTo(tailX, tailY);
-                    starCtx.strokeStyle = gradient;
-                    starCtx.lineWidth = this.thickness;
-                    starCtx.lineCap = 'round'; 
-                    starCtx.stroke();
-                } else {
-                    starCtx.fillStyle = this.color.replace(/[\d\.]+\)$/, `${this.opacity})`);
-                    starCtx.beginPath(); starCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2); starCtx.fill();
-                }
-            }
-        }
-        
-        function createStars() { stars = []; for(let i = 0; i < starConfig.count; i++) stars.push(new Star()); }
-        function animateStars() { starCtx.clearRect(0, 0, starWidth, starHeight); stars.forEach(star => { star.update(); star.draw(); }); requestAnimationFrame(animateStars); }
-
-        initNebulaeCanvas(); drawNebulae(); initStars(); animateStars();
-
-        // 登录逻辑
-        const loginForm = document.getElementById('login-form');
-        loginForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const btn = this.querySelector('button');
-            btn.innerText = "VERIFYING ORBIT..."; btn.style.opacity = "0.7";
-            setTimeout(() => {
-                document.getElementById('login-section').classList.add('hidden');
-                document.getElementById('main-interface').classList.add('visible');
-                document.body.style.overflow = "auto";
-                document.title = "Milet's Space | Orbit";
-            }, 800);
-        });
-    </script>
 </body>
 </html>
