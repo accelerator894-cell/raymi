@@ -1,0 +1,40 @@
+# 夜之城信号 —— 一键部署编排
+# 用法：修改下面的 ADMIN_PASSWORD / 密码类配置后，执行 docker compose up -d --build
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-nightcity_root_pass}
+      MYSQL_DATABASE: nightcity
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p$${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: mysql://root:${DB_ROOT_PASSWORD:-nightcity_root_pass}@db:3306/nightcity
+      # ===== 部署前务必修改以下三项 =====
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+      ADMIN_SECRET: ${ADMIN_SECRET:-please-change-me-to-a-long-random-string}
+      # 以下两项为框架必填项，自托管场景填任意非空值即可（建议与 ADMIN_SECRET 保持一致）
+      APP_ID: selfhosted
+      APP_SECRET: ${ADMIN_SECRET:-please-change-me-to-a-long-random-string}
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:

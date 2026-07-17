@@ -1,0 +1,412 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 230 35% 4%;
+    --foreground: 180 15% 90%;
+    --card: 228 30% 7%;
+    --card-foreground: 180 15% 90%;
+    --popover: 228 30% 6%;
+    --popover-foreground: 180 15% 90%;
+    --primary: 55 98% 52%;
+    --primary-foreground: 230 35% 4%;
+    --secondary: 226 25% 12%;
+    --secondary-foreground: 180 15% 90%;
+    --muted: 226 20% 14%;
+    --muted-foreground: 220 10% 55%;
+    --accent: 187 100% 50%;
+    --accent-foreground: 230 35% 4%;
+    --destructive: 348 100% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 222 25% 16%;
+    --input: 222 25% 18%;
+    --ring: 187 100% 50%;
+    --radius: 0.25rem;
+    --sidebar-background: 228 30% 6%;
+    --sidebar-foreground: 180 15% 90%;
+    --sidebar-primary: 55 98% 52%;
+    --sidebar-primary-foreground: 230 35% 4%;
+    --sidebar-accent: 226 25% 12%;
+    --sidebar-accent-foreground: 180 15% 90%;
+    --sidebar-border: 222 25% 16%;
+    --sidebar-ring: 187 100% 50%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family:
+      "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC",
+      system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: #fcee0a;
+    color: #05060a;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #070a12;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1c2540;
+    border: 2px solid #070a12;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #00f0ff;
+  }
+}
+
+/* ============ 赛博朋克特效库 ============ */
+
+/* --- 故障文字 --- */
+.glitch {
+  position: relative;
+  display: inline-block;
+}
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+.glitch::before {
+  color: #00f0ff;
+  z-index: -1;
+  animation: glitch-shift-1 3.2s infinite linear alternate-reverse;
+}
+.glitch::after {
+  color: #ff2a6d;
+  z-index: -2;
+  animation: glitch-shift-2 2.7s infinite linear alternate-reverse;
+}
+.glitch-static::before,
+.glitch-static::after {
+  animation: none;
+}
+.glitch-static::before {
+  transform: translate(2px, 0);
+  opacity: 0.6;
+}
+.glitch-static::after {
+  transform: translate(-2px, 0);
+  opacity: 0.6;
+}
+
+@keyframes glitch-shift-1 {
+  0% { clip-path: inset(20% 0 80% 0); transform: translate(-3px, -2px); }
+  20% { clip-path: inset(60% 0 10% 0); transform: translate(3px, 1px); }
+  40% { clip-path: inset(30% 0 50% 0); transform: translate(-2px, 2px); }
+  60% { clip-path: inset(80% 0 5% 0); transform: translate(2px, -1px); }
+  80% { clip-path: inset(10% 0 70% 0); transform: translate(-3px, 1px); }
+  100% { clip-path: inset(50% 0 30% 0); transform: translate(3px, -2px); }
+}
+@keyframes glitch-shift-2 {
+  0% { clip-path: inset(70% 0 10% 0); transform: translate(3px, 2px); }
+  25% { clip-path: inset(10% 0 60% 0); transform: translate(-3px, -1px); }
+  50% { clip-path: inset(40% 0 40% 0); transform: translate(2px, -2px); }
+  75% { clip-path: inset(5% 0 85% 0); transform: translate(-2px, 1px); }
+  100% { clip-path: inset(60% 0 20% 0); transform: translate(3px, 2px); }
+}
+
+/* --- 霓虹发光 --- */
+.neon-yellow {
+  color: #fcee0a;
+  text-shadow: 0 0 6px rgba(252, 238, 10, 0.7), 0 0 24px rgba(252, 238, 10, 0.35);
+}
+.neon-cyan {
+  color: #00f0ff;
+  text-shadow: 0 0 6px rgba(0, 240, 255, 0.7), 0 0 24px rgba(0, 240, 255, 0.35);
+}
+.neon-pink {
+  color: #ff2a6d;
+  text-shadow: 0 0 6px rgba(255, 42, 109, 0.7), 0 0 24px rgba(255, 42, 109, 0.35);
+}
+.neon-green {
+  color: #39ff14;
+  text-shadow: 0 0 6px rgba(57, 255, 20, 0.7), 0 0 24px rgba(57, 255, 20, 0.3);
+}
+
+/* --- 斜切角面板 --- */
+.clip-corner {
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+}
+.clip-corner-sm {
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
+.clip-tag {
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+}
+
+/* --- 危险条纹 --- */
+.hazard {
+  background: repeating-linear-gradient(
+    -45deg,
+    #fcee0a 0,
+    #fcee0a 12px,
+    #0a0a0a 12px,
+    #0a0a0a 24px
+  );
+}
+.hazard-thin {
+  background: repeating-linear-gradient(
+    -45deg,
+    #fcee0a 0,
+    #fcee0a 6px,
+    transparent 6px,
+    transparent 12px
+  );
+}
+
+/* --- 扫描线 / CRT 覆盖层 --- */
+.scanlines-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 2px,
+    rgba(0, 0, 0, 0.14) 3px,
+    rgba(0, 0, 0, 0.14) 4px
+  );
+  mix-blend-mode: multiply;
+}
+.crt-vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 91;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
+}
+.scan-beam {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 120px;
+  z-index: 92;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(0, 240, 255, 0.04),
+    rgba(0, 240, 255, 0.09),
+    rgba(0, 240, 255, 0.04),
+    transparent
+  );
+  animation: scan-beam-move 9s linear infinite;
+}
+@keyframes scan-beam-move {
+  0% { top: -140px; }
+  100% { top: 110%; }
+}
+
+/* --- 背景网格 --- */
+.cyber-grid-bg {
+  background-image:
+    linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+/* --- 边框流光 --- */
+.border-flow {
+  position: relative;
+}
+.border-flow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  background: linear-gradient(120deg, #00f0ff, transparent 30%, transparent 70%, #ff2a6d);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* --- 闪烁 --- */
+@keyframes neon-flicker {
+  0%, 100% { opacity: 1; }
+  3% { opacity: 0.4; }
+  6% { opacity: 1; }
+  42% { opacity: 1; }
+  44% { opacity: 0.3; }
+  46% { opacity: 1; }
+  70% { opacity: 0.85; }
+  72% { opacity: 1; }
+}
+.neon-flicker {
+  animation: neon-flicker 5s infinite;
+}
+
+/* --- 打字机光标 --- */
+.type-cursor::after {
+  content: "▊";
+  margin-left: 2px;
+  color: #00f0ff;
+  animation: cursor-blink 0.9s steps(1) infinite;
+}
+@keyframes cursor-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* --- 悬浮卡片 --- */
+.cyber-card {
+  position: relative;
+  background: linear-gradient(160deg, rgba(13, 18, 32, 0.92), rgba(7, 10, 18, 0.96));
+  border: 1px solid rgba(0, 240, 255, 0.18);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.cyber-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(0, 240, 255, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(0, 240, 255, 0.25),
+    0 8px 40px rgba(0, 240, 255, 0.12),
+    inset 0 0 30px rgba(0, 240, 255, 0.04);
+}
+
+/* --- 页面切换 --- */
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.page-enter {
+  animation: page-in 0.45s ease both;
+}
+
+/* --- 数据流装饰 --- */
+@keyframes data-rain {
+  0% { background-position: 0 -200px; }
+  100% { background-position: 0 200px; }
+}
+
+/* ============ Markdown 正文排版 ============ */
+.md-body {
+  @apply text-[15px] leading-8 text-foreground/90;
+  word-break: break-word;
+}
+.md-body h1,
+.md-body h2,
+.md-body h3,
+.md-body h4 {
+  @apply font-bold tracking-wide;
+  color: #fcee0a;
+  margin-top: 2rem;
+  margin-bottom: 0.9rem;
+}
+.md-body h2 {
+  font-size: 1.35rem;
+  padding-left: 0.75rem;
+  border-left: 3px solid #fcee0a;
+}
+.md-body h3 {
+  font-size: 1.12rem;
+  color: #00f0ff;
+}
+.md-body p {
+  margin-bottom: 1.1rem;
+}
+.md-body strong {
+  color: #00f0ff;
+  font-weight: 600;
+}
+.md-body em {
+  color: #ff2a6d;
+  font-style: normal;
+}
+.md-body a {
+  color: #00f0ff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.md-body a:hover {
+  color: #fcee0a;
+}
+.md-body blockquote {
+  margin: 1.4rem 0;
+  padding: 0.9rem 1.2rem;
+  border-left: 3px solid #00f0ff;
+  background: rgba(0, 240, 255, 0.06);
+  color: rgba(206, 250, 255, 0.9);
+  font-style: italic;
+}
+.md-body blockquote p {
+  margin-bottom: 0;
+}
+.md-body ul,
+.md-body ol {
+  margin: 0 0 1.1rem 1.4rem;
+}
+.md-body ul li {
+  list-style: none;
+  position: relative;
+  margin-bottom: 0.45rem;
+  padding-left: 0.4rem;
+}
+.md-body ul li::before {
+  content: "▸";
+  color: #fcee0a;
+  position: absolute;
+  left: -1rem;
+}
+.md-body ol li {
+  list-style: decimal;
+  margin-bottom: 0.45rem;
+}
+.md-body ol li::marker {
+  color: #00f0ff;
+}
+.md-body code {
+  font-family: ui-monospace, "JetBrains Mono", Consolas, monospace;
+  background: rgba(252, 238, 10, 0.1);
+  color: #fcee0a;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.88em;
+}
+.md-body pre {
+  background: #070a12;
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  padding: 1rem;
+  overflow-x: auto;
+  margin-bottom: 1.1rem;
+}
+.md-body pre code {
+  background: transparent;
+  padding: 0;
+  color: #9ef3ff;
+}
+.md-body hr {
+  border: none;
+  height: 1px;
+  margin: 2rem 0;
+  background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.5), transparent);
+}
+.md-body img {
+  max-width: 100%;
+  border: 1px solid rgba(0, 240, 255, 0.25);
+}
