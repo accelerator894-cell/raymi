@@ -6,7 +6,10 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
-RUN npm run build
+# 强制使用 node_modules 里的二进制文件，绝对能找到
+RUN ./node_modules/.bin/vite build && \
+    ./node_modules/.bin/esbuild api/boot.ts --platform=node --bundle --format=esm --outdir=dist
+
 
 # ---------- 运行阶段 ----------
 FROM node:20-alpine
