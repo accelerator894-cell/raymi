@@ -1,4 +1,4 @@
-# ---------- 构建阶段 ----------
+# --------构建阶段--------
 FROM node:20-alpine AS builder
 WORKDIR /app
 
@@ -6,17 +6,14 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
-# 强制使用 node_modules 里的二进制文件，绝对能找到
 RUN ./node_modules/.bin/vite build && \
-    ./node_modules/.bin/esbuild api/boot.ts --platform=node --bundle --format=esm --outdir=dist
+./node_modules/.bin/esbuild api/boot.ts --platform=node --bundle --format=esm --outdir=dist
 
-
-# ---------- 运行阶段 ----------
+# --------运行阶段--------
 FROM node:20-alpine
 WORKDIR /app
 ENV NODE_ENV=production
 
-# 只安装生产依赖
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
